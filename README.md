@@ -4,7 +4,17 @@ A local-first vulnerability intelligence and risk prioritization demo.
 
 > **Demo only:** this project does not provide production server monitoring, vulnerability prevention, or automated patching. Organizations, assets, and remediation actions are fictional.
 
-The backend correlates a recorded package/version with OSV vulnerability evidence, enriches matching CVEs with CISA Known Exploited Vulnerabilities (KEV) data, applies explainable priority rules, and creates a local investigation case. A deterministic Log4Shell scenario works from saved source records without internet access. Live source refresh is an explicit action.
+OQVIAN VULNORBIT is a local analyst workspace for reviewing software vulnerabilities in an asset inventory. It correlates recorded package versions with OSV advisory evidence, enriches matching CVEs with CISA Known Exploited Vulnerabilities (KEV) data, explains its risk ranking, and creates investigation cases. The current demo uses fictional inventory and a saved Log4Shell scenario; it is designed to show the workflow, not to monitor real client systems.
+
+## What the demo does
+
+- Shows inventory, findings, case status, and source freshness in one local dashboard.
+- Compares a component's package, ecosystem, and version against affected-version evidence.
+- Adds CISA KEV context by CVE and combines it with fictional asset exposure and criticality to prioritize analyst review.
+- Saves findings, evidence, scan history, and case updates in a local SQLite database.
+- Lets an analyst refresh public intelligence feeds manually. Detection can also request a live refresh before it runs.
+
+The complete workflow, decision rules, API routes, data handling, and current limitations are in [the product overview](docs/PRODUCT_OVERVIEW.md) and [the architecture notes](docs/ARCHITECTURE.md).
 
 ## Run locally
 
@@ -17,14 +27,18 @@ uv run uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
 
 The dashboard and API are available together at `http://127.0.0.1:8000`; OpenAPI documentation is at `/docs`. The SQLite database is created at `backend/data/vulnorbit.db` by default. Set `VULNORBIT_DB_PATH` to use a different local database path.
 
-## First detection workflow
+The server binds to loopback in this command, so the demo is for the local machine. It does not include sign-in or production deployment controls.
 
-1. Start the local API.
-2. `POST /api/detection/run` with `{}` to run the saved Log4Shell demo scenario.
-3. Open `GET /api/findings` and inspect the CVE evidence and priority explanation.
-4. Open `GET /api/cases` to see the persistent case.
+## Try the demo
 
-`POST /api/intelligence/refresh` requests live OSV and CISA KEV data. If a refresh fails, the last successful local snapshot is kept and marked degraded/stale. The saved KEV fixture is a partial demo subset; it cannot establish that unrelated CVEs are absent from the full catalog.
+1. Start the local API and open `http://127.0.0.1:8000`.
+2. Select **Run detection (demo)**. The saved Log4Shell scenario creates an evidence-backed finding and investigation case.
+3. Review the finding, asset context, and priority in the dashboard. For the full evidence and priority reasons, open `GET /api/findings` or the finding detail route.
+4. Change the case status or assignee, then refresh to see that the update was saved.
+5. Open **Integrations** to inspect source state. **Refresh intelligence sources** makes live requests to OSV and CISA KEV.
+6. Use **Reset demo data** to restore the original fictional inventory and source fixtures.
+
+Live source access is optional. The demo detection scenario works offline from saved records. If a live refresh fails, the last successful local snapshot is retained and its status is shown as degraded or stale.
 
 ## Tests
 
