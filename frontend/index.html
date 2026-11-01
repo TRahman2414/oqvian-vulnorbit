@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OQVIAN VULNORBIT — Analyst Dashboard</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-mark">OQVIAN</span>
+      <span class="brand-name">VULNORBIT</span>
+      <span class="demo-tag" aria-label="Synthetic demo data">Demo</span>
+    </div>
+    <div class="header-meta" id="headerMeta">
+      <span class="status-pill" id="demoStatus" aria-live="polite">Local demo status — loading</span>
+      <span class="divider" aria-hidden="true">|</span>
+      <span id="apiStatus" aria-live="polite">API —</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Dashboard sections">
+  <button class="tab" id="tab-overview" type="button" role="tab" aria-selected="true" aria-controls="panel-overview" data-tab="overview">Overview</button>
+  <button class="tab" id="tab-findings" type="button" role="tab" aria-selected="false" aria-controls="panel-findings" data-tab="findings">Findings</button>
+  <button class="tab" id="tab-assets" type="button" role="tab" aria-selected="false" aria-controls="panel-assets" data-tab="assets">Assets</button>
+  <button class="tab" id="tab-cases" type="button" role="tab" aria-selected="false" aria-controls="panel-cases" data-tab="cases">Cases</button>
+  <button class="tab" id="tab-integrations" type="button" role="tab" aria-selected="false" aria-controls="panel-integrations" data-tab="integrations">Integrations</button>
+</nav>
+
+<main class="app-main">
+
+  <section class="tabpanel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+    <div class="panel-inner">
+      <div class="demo-banner" role="status" aria-live="polite">
+        <span class="demo-banner-dot" aria-hidden="true"></span>
+        Synthetic demo labels — fictional inventory data, local-only telemetry. Not production monitoring.
+      </div>
+
+      <div class="toolbar">
+        <button class="button button-primary" id="btnRunDetection" type="button">Run detection (demo)</button>
+        <button class="button button-ghost" id="btnResetDemo" type="button">Reset demo data</button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric-card">
+          <span class="metric-label">Organizations</span>
+          <span class="metric-value" id="mOrgs">—</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Assets</span>
+          <span class="metric-value" id="mAssets">—</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Open findings</span>
+          <span class="metric-value" id="mFindings">—</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Active cases</span>
+          <span class="metric-value" id="mCases">—</span>
+        </div>
+      </div>
+
+      <div class="risk-summary">
+        <h2>Risk summary (open findings)</h2>
+        <div class="priority-list" id="priorityList">
+          <div class="priority-empty">No open findings. Run detection to populate the demo scenario.</div>
+        </div>
+      </div>
+
+      <div class="last-run" id="lastRun">
+        <h2>Last detection run</h2>
+        <div class="empty">No scan run recorded yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabpanel" id="panel-findings" role="tabpanel" aria-labelledby="tab-findings" tabindex="0" hidden>
+    <div class="panel-inner">
+      <div class="table-wrap">
+        <table id="findingsTable">
+          <caption>Open findings ranked by priority</caption>
+          <thead>
+            <tr>
+              <th scope="col">Finding ID</th>
+              <th scope="col">Asset</th>
+              <th scope="col">Package</th>
+              <th scope="col">CVE</th>
+              <th scope="col">Match state</th>
+              <th scope="col">KEV</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Status</th>
+              <th scope="col">Updated</th>
+            </tr>
+          </thead>
+          <tbody id="findingsBody"></tbody>
+        </table>
+      </div>
+      <div id="findingsEmpty" class="empty-state hidden">
+        <p>No findings available.</p>
+        <button class="button button-primary" id="btnRunDetectionFindings" type="button">Run detection (demo)</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabpanel" id="panel-assets" role="tabpanel" aria-labelledby="tab-assets" tabindex="0" hidden>
+    <div class="panel-inner">
+      <div class="table-wrap">
+        <table id="assetsTable">
+          <caption>Inventory assets</caption>
+          <thead>
+            <tr>
+              <th scope="col">Hostname</th>
+              <th scope="col">Organization</th>
+              <th scope="col">Criticality</th>
+              <th scope="col">Internet exposed</th>
+              <th scope="col">Components</th>
+            </tr>
+          </thead>
+          <tbody id="assetsBody"></tbody>
+        </table>
+      </div>
+      <div id="assetsEmpty" class="empty-state hidden">
+        <p>No assets available.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabpanel" id="panel-cases" role="tabpanel" aria-labelledby="tab-cases" tabindex="0" hidden>
+    <div class="panel-inner">
+      <div class="table-wrap">
+        <table id="casesTable">
+          <caption>Investigation cases</caption>
+          <thead>
+            <tr>
+              <th scope="col">Case ID</th>
+              <th scope="col">Finding / CVE</th>
+              <th scope="col">Package</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Status</th>
+              <th scope="col">Assignee</th>
+              <th scope="col">Updated</th>
+            </tr>
+          </thead>
+          <tbody id="casesBody"></tbody>
+        </table>
+      </div>
+      <div id="casesEmpty" class="empty-state hidden">
+        <p>No cases available.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabpanel" id="panel-integrations" role="tabpanel" aria-labelledby="tab-integrations" tabindex="0" hidden>
+    <div class="panel-inner">
+      <div class="source-freshness">
+        <h2>Source freshness</h2>
+        <div class="toolbar">
+          <button class="button button-primary" id="btnRefreshIntel" type="button">Refresh intelligence sources</button>
+        </div>
+        <div class="table-wrap">
+          <table id="intelTable">
+            <caption>Intelligence source feed state</caption>
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Status</th>
+                <th scope="col">Mode</th>
+                <th scope="col">Checked at</th>
+                <th scope="col">Last success</th>
+                <th scope="col">Version</th>
+                <th scope="col">Last error</th>
+              </tr>
+            </thead>
+            <tbody id="intelBody"></tbody>
+          </table>
+        </div>
+        <div id="intelEmpty" class="empty-state hidden">
+          <p>No source feed state recorded.</p>
+          <button class="button button-primary" id="btnRefreshIntelEmpty" type="button">Refresh intelligence sources</button>
+        </div>
+      </div>
+
+      <div class="model-connector" id="modelConnector">
+        <h2>Local model connector</h2>
+        <div class="connector-status">
+          <span class="connector-dot" aria-hidden="true"></span>
+          <span class="connector-label">Not connected</span>
+        </div>
+        <p class="connector-note">Placeholder for a generic local-model connector. No backend integration is wired; connecting is a no-op in this demo.</p>
+        <button class="button button-ghost" id="btnConnectModel" type="button" disabled>Connect</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  OQVIAN VULNORBIT — local-first vulnerability intelligence demo. Synthetic data only.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
